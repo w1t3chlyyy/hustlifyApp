@@ -1,0 +1,43 @@
+project_id = "unjcwqmgthsvoyoeaxdd"
+
+[functions.telegram-bot]
+verify_jwt = false
+
+[functions.cryptobot-webhook]
+verify_jwt = false
+
+[functions.pay-with-balance]
+verify_jwt = false
+
+[functions.create-invoice]
+verify_jwt = false
+
+[functions.check-payment]
+verify_jwt = false
+
+[functions.get-my-data]
+verify_jwt = false
+
+[functions.create-topup-invoice]
+verify_jwt = false
+
+[functions.submit-review]
+verify_jwt = false
+
+[functions.get-exchange-rate]
+verify_jwt = false
+
+[functions.notify-pending-fulfillments]
+verify_jwt = false
+
+[functions.admin-api]
+verify_jwt = false
+
+[functions.create-sbp-order]
+verify_jwt = false
+
+[functions.spin-wheel]
+verify_jwt = false
+
+[functions.submit-sbp-receipt]
+verify_jwt = false

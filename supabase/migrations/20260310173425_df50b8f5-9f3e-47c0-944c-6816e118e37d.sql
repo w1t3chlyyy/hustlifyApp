@@ -1,0 +1,1 @@
+CREATE POLICY "Balance history publicly readable" ON public.balance_history FOR SELECT TO public USING (true);

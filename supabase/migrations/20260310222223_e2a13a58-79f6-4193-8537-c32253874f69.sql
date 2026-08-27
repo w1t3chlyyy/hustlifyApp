@@ -1,0 +1,1 @@
+ALTER TABLE public.user_profiles ADD COLUMN accepted_terms boolean NOT NULL DEFAULT false;

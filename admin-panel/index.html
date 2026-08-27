@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Админ-панель</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; background: #0a0a0a; color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 24px 16px 80px; }
+  h1 { font-size: 22px; font-weight: 900; margin: 0 0 4px; }
+  .muted { color: #9a9a9a; font-size: 13px; }
+  .card {
+    background: #141414; border: 1px solid #262626; border-radius: 16px;
+    padding: 20px; margin-top: 16px;
+  }
+  label { display: block; font-size: 12px; color: #9a9a9a; margin: 12px 0 6px; }
+  input, textarea, select {
+    width: 100%; background: #0a0a0a; border: 1px solid #2c2c2c; color: #fff;
+    border-radius: 10px; padding: 10px 12px; font-size: 14px; font-family: inherit;
+  }
+  textarea { min-height: 90px; resize: vertical; }
+  button {
+    cursor: pointer; border: none; border-radius: 10px; padding: 11px 18px;
+    font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: .03em;
+  }
+  .btn-primary { background: #fff; color: #000; }
+  .btn-ghost { background: transparent; color: #fff; border: 1px solid #333; }
+  .btn-danger { background: #3a1414; color: #ff6b6b; border: 1px solid #5a1f1f; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+  .err { color: #ff6b6b; font-size: 13px; margin-top: 10px; min-height: 1em; }
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid #232323; font-size: 13px; vertical-align: top; }
+  th { color: #9a9a9a; font-weight: 600; }
+  .pill { display: inline-block; font-size: 10px; font-weight: 800; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 999px; background: #1e1e1e; }
+  .pill.on { background: #1e3a1e; color: #7dd87d; }
+  .pill.off { background: #3a1e1e; color: #d87d7d; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+  a.link { color: #fff; text-decoration: underline; cursor: pointer; }
+  .hidden { display: none !important; }
+  .switch-row { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    border: 1px solid #262626; border-radius: 10px; padding: 10px 12px; margin-top: 14px; }
+  .switch-row input { width: auto; }
+  .thumb { width: 44px; height: 44px; border-radius: 8px; background: #000; overflow: hidden; flex-shrink: 0; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ LOGIN SCREEN ============ -->
+  <div id="loginScreen">
+    <h1>🛡 Админ-панель</h1>
+    <p class="muted">Войдите с логином и паролем, которые вам прислал бот.</p>
+    <div class="card" style="max-width:360px">
+      <label>Логин</label>
+      <input id="loginInput" autocomplete="username" />
+      <label>Пароль</label>
+      <input id="passwordInput" type="password" autocomplete="current-password" />
+      <div class="row">
+        <button class="btn-primary" onclick="doLogin()">Войти</button>
+      </div>
+      <div class="err" id="loginErr"></div>
+    </div>
+  </div>
+
+  <!-- ============ DASHBOARD ============ -->
+  <div id="dashScreen" class="hidden">
+    <div class="topbar">
+      <div>
+        <h1>🛡 Админ-панель</h1>
+        <p class="muted">Вы вошли как <b id="whoAmI"></b></p>
+      </div>
+      <button class="btn-ghost" onclick="doLogout()">Выйти</button>
+    </div>
+
+    <div class="card">
+      <div class="topbar">
+        <div>
+          <h2 style="margin:0;font-size:16px">📦 Наши кейсы</h2>
+          <p class="muted">Карточки в разделе «Наши кейсы» на главной странице сайта.</p>
+        </div>
+        <button class="btn-primary" onclick="openCaseForm()">+ Добавить кейс</button>
+      </div>
+      <div id="casesErr" class="err"></div>
+      <table id="casesTable">
+        <thead>
+          <tr><th></th><th>Название</th><th>Цена</th><th>Статус</th><th></th></tr>
+        </thead>
+        <tbody id="casesBody"></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2 style="margin:0;font-size:16px">🚧 Скоро здесь появится</h2>
+      <p class="muted">Товары, отзывы, настройки сайта — эти разделы уже доступны в React-админке проекта (/admin), сюда добавим по такому же принципу следующим шагом.</p>
+    </div>
+  </div>
+
+  <!-- ============ CASE EDIT MODAL ============ -->
+  <div id="caseModal" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50;overflow:auto">
+    <div class="card" style="max-width:560px;width:100%;max-height:90vh;overflow:auto">
+      <h2 id="caseModalTitle" style="margin:0 0 8px;font-size:16px">Кейс</h2>
+      <input type="hidden" id="c_id" />
+
+      <label>Slug (латиницей, для ссылок ?case=)</label>
+      <input id="c_slug" placeholder="business" />
+
+      <label>Заголовок</label>
+      <input id="c_title" placeholder="Название кейса" />
+
+      <label>Короткое описание (на карточке)</label>
+      <textarea id="c_short" rows="2"></textarea>
+
+      <label>Полное описание (в попапе)</label>
+      <textarea id="c_full" style="min-height:120px"></textarea>
+
+      <div class="grid2">
+        <div>
+          <label>Цена, ₽</label>
+          <input id="c_price" type="number" />
+        </div>
+        <div>
+          <label>Старая цена, ₽</label>
+          <input id="c_oldPrice" type="number" />
+        </div>
+      </div>
+
+      <label>Картинка (ссылка URL)</label>
+      <input id="c_image" placeholder="https://..." />
+
+      <div class="grid2">
+        <div>
+          <label>Бейдж</label>
+          <select id="c_badgeType">
+            <option value="none">Нет</option>
+            <option value="hit">Хит продаж (огонёк)</option>
+            <option value="custom">Свой текст</option>
+          </select>
+        </div>
+        <div>
+          <label>Текст бейджа</label>
+          <input id="c_badgeText" placeholder="Коллаборация" />
+        </div>
+      </div>
+
+      <label>«Осталось N мест» (пусто — скрыть)</label>
+      <input id="c_spotsLeft" type="number" placeholder="" />
+
+      <div class="switch-row">
+        <div>
+          <div>Неоновая подсветка карточки</div>
+          <div class="muted">Свечение по контуру, как у акционных карточек</div>
+        </div>
+        <input type="checkbox" id="c_highlightEnabled" />
+      </div>
+
+      <label>Цвет подсветки</label>
+      <input id="c_highlightColor" placeholder="#ffffff" />
+
+      <label>Цвет фона карточки (пусто — тема по умолчанию)</label>
+      <input id="c_backgroundColor" placeholder="" />
+
+      <div class="grid2">
+        <div>
+          <label>Текст кнопки</label>
+          <input id="c_ctaText" placeholder="Подробнее" />
+        </div>
+        <div>
+          <label>Telegram для заявок (без @, пусто — общая поддержка)</label>
+          <input id="c_supportUsername" placeholder="HustlifyHelp" />
+        </div>
+      </div>
+
+      <label>Внешняя ссылка вместо Telegram-сообщения (необязательно)</label>
+      <input id="c_externalLink" placeholder="https://..." />
+
+      <label style="display:flex;align-items:center;gap:8px;margin-top:14px">
+        <input type="checkbox" id="c_active" style="width:auto" checked /> Показывать на сайте
+      </label>
+
+      <div class="err" id="caseModalErr"></div>
+      <div class="row">
+        <button class="btn-primary" onclick="saveCase()">Сохранить</button>
+        <button class="btn-ghost" onclick="closeCaseForm()">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ---- CONFIG: same values as VITE_SUPABASE_URL / VITE_SUPABASE_PUBLISHABLE_KEY
+// in the main project's .env — this points at the SAME (client's real) Supabase
+// project, so it edits the SAME data as the main site. ----
+const SUPABASE_URL = "https://unjcwqmgthsvoyoeaxdd.supabase.co";
+const SUPABASE_ANON_KEY = "PASTE_REAL_ANON_KEY_HERE"; // <-- fill in before deploying
+// -------------------------------------------------------------------
+
+const API_URL = SUPABASE_URL.replace(/\/$/, "") + "/functions/v1/admin-api";
+let TOKEN = sessionStorage.getItem("admin_token") || "";
+let WHOAMI = sessionStorage.getItem("admin_login") || "";
+let CASES_CACHE = [];
+
+async function api(action, extra) {
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      apikey: SUPABASE_ANON_KEY,
+      ...(TOKEN ? { Authorization: "Bearer " + TOKEN } : {}),
+    },
+    body: JSON.stringify({ action, ...extra }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || data?.error) {
+    if (res.status === 401) showLogin();
+    throw new Error(data.error || "Ошибка запроса");
+  }
+  return data;
+}
+
+function show(el, yes) { document.getElementById(el).classList.toggle("hidden", !yes); }
+
+async function boot() {
+  if (!TOKEN) return showLogin();
+  try {
+    document.getElementById("whoAmI").textContent = WHOAMI || "модератор";
+    show("loginScreen", false);
+    show("dashScreen", true);
+    await loadCases();
+  } catch (e) {
+    showLogin();
+  }
+}
+
+function showLogin() {
+  TOKEN = "";
+  sessionStorage.removeItem("admin_token");
+  sessionStorage.removeItem("admin_login");
+  show("loginScreen", true);
+  show("dashScreen", false);
+}
+
+async function doLogin() {
+  const login = document.getElementById("loginInput").value.trim();
+  const password = document.getElementById("passwordInput").value;
+  const errEl = document.getElementById("loginErr");
+  errEl.textContent = "";
+  try {
+    const data = await api("mod.login", { login, password });
+    TOKEN = data.token;
+    WHOAMI = data.login || login;
+    sessionStorage.setItem("admin_token", TOKEN);
+    sessionStorage.setItem("admin_login", WHOAMI);
+    await boot();
+  } catch (e) {
+    errEl.textContent = e.message;
+  }
+}
+
+function doLogout() {
+  showLogin();
+}
+
+async function loadCases() {
+  const errEl = document.getElementById("casesErr");
+  errEl.textContent = "";
+  try {
+    const data = await api("cases.list");
+    CASES_CACHE = data.data || [];
+    renderCases();
+  } catch (e) {
+    errEl.textContent = e.message;
+  }
+}
+
+function renderCases() {
+  const body = document.getElementById("casesBody");
+  body.innerHTML = "";
+  for (const c of CASES_CACHE) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><div class="thumb">${c.image_url ? `<img src="${escapeHtml(c.image_url)}" alt="" />` : ""}</div></td>
+      <td><b>${escapeHtml(c.title)}</b><div class="muted">${escapeHtml(c.slug)}</div></td>
+      <td>${c.price} ₽ <span class="muted" style="text-decoration:line-through">${c.old_price ?? ""} ₽</span></td>
+      <td><span class="pill ${c.is_active ? "on" : "off"}">${c.is_active ? "активен" : "скрыт"}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn-ghost" onclick='openCaseForm(${JSON.stringify(c).replace(/'/g, "&#39;")})'>Ред.</button>
+        <button class="btn-danger" onclick="deleteCase('${c.id}')">Удал.</button>
+      </td>
+    `;
+    body.appendChild(tr);
+  }
+}
+
+function escapeHtml(s) {
+  return String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+
+function openCaseForm(c) {
+  document.getElementById("caseModalErr").textContent = "";
+  document.getElementById("caseModalTitle").textContent = c ? "Редактировать кейс" : "Новый кейс";
+  document.getElementById("c_id").value = c ? c.id : "";
+  document.getElementById("c_slug").value = c ? c.slug : "";
+  document.getElementById("c_title").value = c ? c.title : "";
+  document.getElementById("c_short").value = c ? c.short_description : "";
+  document.getElementById("c_full").value = c ? c.full_description : "";
+  document.getElementById("c_price").value = c ? c.price : "";
+  document.getElementById("c_oldPrice").value = c ? (c.old_price ?? "") : "";
+  document.getElementById("c_image").value = c ? (c.image_url || "") : "";
+  document.getElementById("c_badgeType").value = c ? (c.badge_type || "none") : "none";
+  document.getElementById("c_badgeText").value = c ? (c.badge_text || "") : "";
+  document.getElementById("c_spotsLeft").value = c && c.spots_left != null ? c.spots_left : "";
+  document.getElementById("c_highlightEnabled").checked = c ? !!c.highlight_enabled : false;
+  document.getElementById("c_highlightColor").value = c ? (c.highlight_color || "#ffffff") : "#ffffff";
+  document.getElementById("c_backgroundColor").value = c ? (c.background_color || "") : "";
+  document.getElementById("c_ctaText").value = c ? (c.cta_text || "Подробнее") : "Подробнее";
+  document.getElementById("c_supportUsername").value = c ? (c.support_username || "") : "";
+  document.getElementById("c_externalLink").value = c ? (c.external_link || "") : "";
+  document.getElementById("c_active").checked = c ? !!c.is_active : true;
+  show("caseModal", true);
+}
+
+function closeCaseForm() { show("caseModal", false); }
+
+async function saveCase() {
+  const errEl = document.getElementById("caseModalErr");
+  errEl.textContent = "";
+  const slug = document.getElementById("c_slug").value.trim();
+  const title = document.getElementById("c_title").value.trim();
+  if (!slug || !title) { errEl.textContent = "Slug и заголовок обязательны"; return; }
+  const id = document.getElementById("c_id").value || undefined;
+  const spotsLeftRaw = document.getElementById("c_spotsLeft").value;
+  const oldPriceRaw = document.getElementById("c_oldPrice").value;
+  try {
+    await api("cases.upsert", {
+      row: {
+        ...(id ? { id } : {}),
+        slug,
+        title,
+        short_description: document.getElementById("c_short").value.trim(),
+        full_description: document.getElementById("c_full").value.trim(),
+        price: Number(document.getElementById("c_price").value) || 0,
+        old_price: oldPriceRaw === "" ? null : Number(oldPriceRaw),
+        image_url: document.getElementById("c_image").value.trim(),
+        badge_type: document.getElementById("c_badgeType").value,
+        badge_text: document.getElementById("c_badgeText").value.trim(),
+        spots_left: spotsLeftRaw === "" ? null : Number(spotsLeftRaw),
+        highlight_enabled: document.getElementById("c_highlightEnabled").checked,
+        highlight_color: document.getElementById("c_highlightColor").value.trim() || "#ffffff",
+        background_color: document.getElementById("c_backgroundColor").value.trim() || null,
+        cta_text: document.getElementById("c_ctaText").value.trim() || "Подробнее",
+        support_username: document.getElementById("c_supportUsername").value.trim() || null,
+        external_link: document.getElementById("c_externalLink").value.trim() || null,
+        is_active: document.getElementById("c_active").checked,
+        sort_order: id ? undefined : CASES_CACHE.length,
+      },
+    });
+    closeCaseForm();
+    await loadCases();
+  } catch (e) {
+    errEl.textContent = e.message;
+  }
+}
+
+async function deleteCase(id) {
+  if (!confirm("Удалить кейс безвозвратно?")) return;
+  try {
+    await api("cases.delete", { id });
+    await loadCases();
+  } catch (e) {
+    alert(e.message);
+  }
+}
+
+boot();
+</script>
+</body>
+</html>

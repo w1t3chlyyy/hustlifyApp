@@ -1,0 +1,199 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Six+Caps&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* ─── Dark theme (default — used by tenant shops) ─── */
+  :root {
+    --background: 0 0% 4%;
+    --foreground: 0 0% 96%;
+
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 96%;
+
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 96%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 6%;
+
+    --secondary: 0 0% 11%;
+    --secondary-foreground: 0 0% 92%;
+
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 60%;
+
+    --accent: 0 0% 14%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 15%;
+    --input: 0 0% 11%;
+    --ring: 0 0% 80%;
+
+    --radius: 0.875rem;
+
+    --sidebar-background: 0 0% 4%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 0 0% 98%;
+    --sidebar-primary-foreground: 0 0% 6%;
+    --sidebar-accent: 0 0% 11%;
+    --sidebar-accent-foreground: 0 0% 92%;
+    --sidebar-border: 0 0% 15%;
+    --sidebar-ring: 0 0% 80%;
+
+    /* Custom tokens */
+    --surface: 0 0% 8%;
+    --surface-foreground: 0 0% 90%;
+    --warning: 38 92% 55%;
+    --warning-foreground: 0 0% 0%;
+    --success: 142 60% 50%;
+    --success-foreground: 0 0% 0%;
+    --gold: 0 0% 98%;
+    --gold-foreground: 0 0% 6%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(0, 0%, 100%), hsl(0, 0%, 88%));
+    --gradient-surface: linear-gradient(135deg, hsl(0, 0%, 7%), hsl(0, 0%, 10%));
+    --gradient-hero: radial-gradient(120% 80% at 50% 0%, hsl(0, 0%, 12%) 0%, hsl(0, 0%, 4%) 60%);
+
+    /* Subtle white glow — refined, not aggressive */
+    --shadow-glow: 0 0 0 1px hsl(0, 0%, 100%, 0.08), 0 8px 24px hsl(0, 0%, 100%, 0.06);
+    --shadow-card: 0 1px 0 hsl(0, 0%, 100%, 0.04) inset, 0 8px 24px hsl(0, 0%, 0%, 0.5);
+    --shadow-card-hover: 0 1px 0 hsl(0, 0%, 100%, 0.06) inset, 0 12px 32px hsl(0, 0%, 0%, 0.6);
+
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+  }
+
+  /* ─── Storefront theme — dark cards/background with blue actions ─── */
+  .theme-light {
+    --background: 0 0% 4%;
+    --foreground: 0 0% 96%;
+
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 96%;
+
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 96%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 7%;
+
+    --secondary: 0 0% 11%;
+    --secondary-foreground: 0 0% 92%;
+
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 65%;
+
+    --accent: 0 0% 80%;
+    --accent-foreground: 0 0% 7%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 15%;
+    --input: 0 0% 11%;
+    --ring: 0 0% 80%;
+
+    --surface: 0 0% 8%;
+    --surface-foreground: 0 0% 90%;
+    --warning: 38 92% 55%;
+    --warning-foreground: 0 0% 100%;
+    --success: 142 60% 45%;
+    --success-foreground: 0 0% 100%;
+    --gold: 0 0% 98%;
+    --gold-foreground: 0 0% 7%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(0, 0%, 98%), hsl(0, 0%, 75%));
+    --gradient-surface: linear-gradient(135deg, hsl(0, 0%, 7%), hsl(0, 0%, 10%));
+    --gradient-hero: radial-gradient(120% 80% at 50% 0%, hsl(0, 0%, 12%) 0%, hsl(0, 0%, 4%) 60%);
+
+    --shadow-glow: 0 8px 24px hsl(0, 0%, 100%, 0.15);
+    --shadow-card: 0 1px 0 hsl(0, 0%, 100%, 0.04) inset, 0 8px 24px hsl(0, 0%, 0%, 0.5);
+    --shadow-card-hover: 0 1px 0 hsl(0, 0%, 100%, 0.06) inset, 0 12px 32px hsl(0, 0%, 0%, 0.6);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-body);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: hsl(var(--surface)); }
+  ::-webkit-scrollbar-thumb { background: hsl(var(--muted-foreground) / 0.3); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.5); }
+}
+
+@layer components {
+  .glass {
+    @apply bg-card/60 backdrop-blur-xl border border-border/50;
+  }
+  .glass-strong {
+    @apply bg-card/80 backdrop-blur-2xl border border-border/60;
+  }
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-primary);
+  }
+  .gradient-border {
+    position: relative;
+  }
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: var(--gradient-primary);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+  .hover-lift {
+    @apply transition-all duration-300;
+  }
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-card-hover);
+  }
+  .section-padding {
+    @apply py-16 md:py-24 px-4 md:px-6;
+  }
+  .container-main {
+    @apply max-w-7xl mx-auto;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  /* Refined white neon — soft halo, hairline border */
+  .neon {
+    box-shadow: 0 0 0 1px hsl(0, 0%, 100%, 0.12), 0 6px 20px hsl(0, 0%, 100%, 0.08);
+    transition: box-shadow 0.25s ease, transform 0.2s ease;
+  }
+  .neon:hover {
+    box-shadow: 0 0 0 1px hsl(0, 0%, 100%, 0.2), 0 10px 28px hsl(0, 0%, 100%, 0.14);
+  }
+}
