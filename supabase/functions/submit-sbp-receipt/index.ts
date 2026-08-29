@@ -102,6 +102,22 @@ serve(async (req) => {
       } catch (e) { console.error("notify admin:", e); }
     }
 
+    // Same admin notification, mirrored into a second (optional) bot — e.g. a
+    // dedicated "notifications" bot. Set TELEGRAM_BOT_TOKEN_2 to enable; the
+    // inline "Open" button is left off here since its callback only the main
+    // bot's webhook knows how to answer.
+    const botToken2 = Deno.env.get("TELEGRAM_BOT_TOKEN_2");
+    if (botToken2) {
+      for (const aid of adminIds) {
+        try {
+          await fetch(`https://api.telegram.org/bot${botToken2}/sendMessage`, {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ chat_id: Number(aid), parse_mode: "HTML", text: adminText }),
+          });
+        } catch (e) { console.error("notify admin (bot 2):", e); }
+      }
+    }
+
     // Confirm to buyer
     try {
       await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
