@@ -144,6 +144,21 @@ async function handleOrder(supabase: any, invoice: any, orderData: any): Promise
           });
         } catch (e) { console.error("notify admin:", e); }
       }
+
+      // Same admin notification, mirrored into a second (optional) bot.
+      // Set TELEGRAM_BOT_TOKEN_2 to enable. No inline button here — its
+      // callback is only handled by the main bot's webhook.
+      const botToken2 = Deno.env.get("TELEGRAM_BOT_TOKEN_2");
+      if (botToken2) {
+        for (const aid of adminIds) {
+          try {
+            await fetch(`https://api.telegram.org/bot${botToken2}/sendMessage`, {
+              method: "POST", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ chat_id: Number(aid), parse_mode: "HTML", text: adminText }),
+            });
+          } catch (e) { console.error("notify admin (bot 2):", e); }
+        }
+      }
     }
   } else {
     const header = `✅ <b>Оплата подтверждена!</b>\n📦 Заказ: <code>${order.order_number}</code>\n💰 Сумма: $${Number(order.total_amount).toFixed(2)}`;
