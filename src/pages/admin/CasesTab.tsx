@@ -14,6 +14,7 @@ import TabToolbar from './components/TabToolbar';
 import ListRow, { RowThumb } from './components/ListRow';
 import Pill from './components/Pill';
 import EmptyState from './components/EmptyState';
+import ImageUrlOrFileInput from './components/ImageUrlOrFileInput';
 
 const emptyCase = {
   id: undefined as string | undefined,
@@ -168,8 +169,12 @@ const CasesTab = () => {
                   <Input type="number" value={editing.old_price ?? ''} onChange={(e) => setEditing({ ...editing, old_price: e.target.value === '' ? null : Number(e.target.value) })} />
                 </Field>
               </div>
-              <Field label="Картинка (URL)">
-                <Input value={editing.image_url ?? ''} onChange={(e) => setEditing({ ...editing, image_url: e.target.value })} placeholder="https://..." />
+              <Field label="Картинка">
+                <ImageUrlOrFileInput
+                  value={editing.image_url ?? ''}
+                  onChange={(url) => setEditing({ ...editing, image_url: url })}
+                  folder="cases"
+                />
               </Field>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
