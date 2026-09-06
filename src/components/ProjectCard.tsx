@@ -2,10 +2,14 @@ import { Link } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { DbProject } from '@/hooks/useShop';
+import { isImageValue } from '@/lib/isImageValue';
 import logoFlux from '@/assets/logo-flux.jpg';
 import logoCursor from '@/assets/logo-cursor.jpg';
 import logoVieto from '@/assets/logo-vieto.jpg';
 
+// Fallback logos for projects that haven't set a custom icon in the admin
+// panel yet. Once an admin uploads/sets an icon for a project, that value
+// (project.icon) always takes priority over these defaults.
 const PROJECT_LOGOS: Record<string, string> = {
   flux: logoFlux,
   cursor: logoCursor,
@@ -18,7 +22,7 @@ interface Props {
 }
 
 const ProjectCard = ({ project, index }: Props) => {
-  const logo = PROJECT_LOGOS[project.id];
+  const logo = isImageValue(project.icon) ? project.icon : PROJECT_LOGOS[project.id];
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
