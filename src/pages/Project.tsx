@@ -12,6 +12,7 @@ import cursorNftGifts from '@/assets/cursor-nft-gifts.jpg';
 import logoVieto from '@/assets/logo-vieto.jpg';
 
 import { useProject, useProjectProducts, useProjectCategories, type ExtendedProduct } from '@/hooks/useShop';
+import { isImageValue } from '@/lib/isImageValue';
 import { useStore } from '@/contexts/StoreContext';
 import { toast } from 'sonner';
 
@@ -226,7 +227,7 @@ const Project = () => {
             className="rounded-2xl overflow-hidden border border-border bg-card"
           >
             {(() => {
-              const photo = project.banner || PROJECT_PHOTOS[project.id];
+              const photo = project.banner || (isImageValue(project.icon) ? project.icon : PROJECT_PHOTOS[project.id]);
               return photo ? (
                 <div className="bg-secondary">
                   <img src={photo} alt={project.title} className="w-full h-auto object-contain" />
@@ -239,7 +240,11 @@ const Project = () => {
             })()}
             <div className="p-5">
               <div className="flex items-center gap-3">
-                <span className="text-3xl">{project.icon}</span>
+                {isImageValue(project.icon) ? (
+                  <img src={project.icon} alt="" className="w-9 h-9 rounded-lg object-cover shrink-0" />
+                ) : (
+                  <span className="text-3xl">{project.icon}</span>
+                )}
                 <h1 className="font-display text-3xl font-black tracking-tight">{project.title}</h1>
               </div>
               {project.subtitle && (
