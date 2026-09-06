@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Loader2, Plus, Upload, X, Package } from 'lucide-react';
+import { Loader2, Plus, X, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -12,6 +12,7 @@ import TabToolbar from './components/TabToolbar';
 import ListRow, { RowThumb } from './components/ListRow';
 import Pill from './components/Pill';
 import EmptyState from './components/EmptyState';
+import ImageUrlOrFileInput from './components/ImageUrlOrFileInput';
 
 type GalleryItem = { url: string; link?: string; title?: string };
 
@@ -60,8 +61,6 @@ const ProductsTab = () => {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<ProductRow | null>(null);
   const [saving, setSaving] = useState(false);
-  const [uploadingImage, setUploadingImage] = useState(false);
-  const [uploadingGalleryIndex, setUploadingGalleryIndex] = useState<number | null>(null);
   const [search, setSearch] = useState('');
   const confirm = useConfirm();
 
@@ -112,37 +111,6 @@ const ProductsTab = () => {
       load();
     } catch (e: any) {
       toast({ title: 'Ошибка удаления', description: e?.message, variant: 'destructive' });
-    }
-  };
-
-  const uploadMainImage = async (file: File) => {
-    if (!editing) return;
-    setUploadingImage(true);
-    try {
-      const url = await adminApi.uploadFile(file, 'products');
-      setEditing((cur) => (cur ? { ...cur, image: url } : cur));
-    } catch (e: any) {
-      toast({ title: 'Не удалось загрузить файл', description: e?.message, variant: 'destructive' });
-    } finally {
-      setUploadingImage(false);
-    }
-  };
-
-  const uploadGalleryImage = async (index: number, file: File) => {
-    if (!editing) return;
-    setUploadingGalleryIndex(index);
-    try {
-      const url = await adminApi.uploadFile(file, 'products/gallery');
-      setEditing((cur) => {
-        if (!cur) return cur;
-        const gallery = [...cur.gallery];
-        gallery[index] = { ...gallery[index], url };
-        return { ...cur, gallery };
-      });
-    } catch (e: any) {
-      toast({ title: 'Не удалось загрузить файл', description: e?.message, variant: 'destructive' });
-    } finally {
-      setUploadingGalleryIndex(null);
     }
   };
 
@@ -223,25 +191,12 @@ const ProductsTab = () => {
                 <Field label="Гарантия"><Input value={editing.guarantee} onChange={(e) => setEditing({ ...editing, guarantee: e.target.value })} /></Field>
               </div>
               <Field label="Картинка">
-                <div className="flex items-center gap-2">
-                  <Input value={editing.image ?? ''} onChange={(e) => setEditing({ ...editing, image: e.target.value })} placeholder="https://... или загрузите файл" />
-                  <label className="shrink-0 inline-flex">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadMainImage(f); e.target.value = ''; }}
-                    />
-                    <span className="inline-flex items-center justify-center h-10 w-10 rounded-md border border-input bg-background cursor-pointer hover:bg-accent">
-                      {uploadingImage ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-                    </span>
-                  </label>
-                </div>
-                {editing.image && (
-                  <div className="mt-2 w-16 h-16 rounded-lg overflow-hidden border border-border bg-black">
-                    <img src={editing.image} alt="" className="w-full h-full object-cover" />
-                  </div>
-                )}
+                <ImageUrlOrFileInput
+                  value={editing.image ?? ''}
+                  onChange={(url) => setEditing({ ...editing, image: url })}
+                  folder="products"
+                  previewClassName="w-16 h-16"
+                />
               </Field>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -317,25 +272,14 @@ const ProductsTab = () => {
                         {item.url && <img src={item.url} alt="" className="w-full h-full object-cover" />}
                       </div>
                       <div className="flex-1 space-y-1.5">
-                        <div className="flex items-center gap-1.5">
-                          <Input
-                            className="h-8 text-xs"
-                            value={item.url}
-                            onChange={(e) => updateGalleryItem(i, { url: e.target.value })}
-                            placeholder="URL картинки или загрузите файл"
-                          />
-                          <label className="shrink-0 inline-flex">
-                            <input
-                              type="file"
-                              accept="image/*"
-                              className="hidden"
-                              onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadGalleryImage(i, f); e.target.value = ''; }}
-                            />
-                            <span className="inline-flex items-center justify-center h-8 w-8 rounded-md border border-input bg-background cursor-pointer hover:bg-accent">
-                              {uploadingGalleryIndex === i ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
-                            </span>
-                          </label>
-                        </div>
+                        <ImageUrlOrFileInput
+                          value={item.url}
+                          onChange={(url) => updateGalleryItem(i, { url })}
+                          folder="products/gallery"
+                          placeholder="URL картинки или загрузите файл"
+                          inputClassName="h-8 text-xs"
+                          showPreview={false}
+                        />
                         <Input
                           className="h-8 text-xs"
                           value={item.title ?? ''}
