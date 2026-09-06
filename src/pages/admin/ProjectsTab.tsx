@@ -13,6 +13,7 @@ import ListRow, { RowThumb } from './components/ListRow';
 import Pill from './components/Pill';
 import EmptyState from './components/EmptyState';
 import ImageUrlOrFileInput from './components/ImageUrlOrFileInput';
+import { isImageValue } from '@/lib/isImageValue';
 
 const emptyProject = {
   id: '',
@@ -110,7 +111,7 @@ const ProjectsTab = () => {
         {filtered.map((p) => (
           <ListRow
             key={p.id}
-            thumb={<RowThumb icon={<span>{p.icon}</span>} />}
+            thumb={isImageValue(p.icon) ? <RowThumb src={p.icon} /> : <RowThumb icon={<span>{p.icon}</span>} />}
             title={p.title}
             badges={!p.is_active && <Pill>скрыт</Pill>}
             meta={p.id}
@@ -142,10 +143,16 @@ const ProjectsTab = () => {
               )}
               <Field label="Подзаголовок"><Input value={editing.subtitle} onChange={(e) => setEditing({ ...editing, subtitle: e.target.value })} /></Field>
               <Field label="Описание"><Textarea rows={3} value={editing.description} onChange={(e) => setEditing({ ...editing, description: e.target.value })} /></Field>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <Field label="Иконка (эмодзи)"><Input value={editing.icon} onChange={(e) => setEditing({ ...editing, icon: e.target.value })} /></Field>
-                <Field label="Порядок сортировки"><Input type="number" value={editing.sort_order} onChange={(e) => setEditing({ ...editing, sort_order: Number(e.target.value) })} /></Field>
-              </div>
+              <Field label="Иконка (эмодзи, ссылка на картинку или загрузите файл)">
+                <ImageUrlOrFileInput
+                  value={editing.icon}
+                  onChange={(v) => setEditing({ ...editing, icon: v })}
+                  folder="projects/icons"
+                  placeholder="✨ или https://... или загрузите файл"
+                  previewClassName="w-14 h-14"
+                />
+              </Field>
+              <Field label="Порядок сортировки"><Input type="number" value={editing.sort_order} onChange={(e) => setEditing({ ...editing, sort_order: Number(e.target.value) })} /></Field>
               <Field label="Баннер">
                 <ImageUrlOrFileInput
                   value={editing.banner ?? ''}
