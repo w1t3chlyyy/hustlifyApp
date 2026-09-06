@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import { adminApi } from '@/lib/adminApi';
+import { isImageValue } from '@/lib/isImageValue';
 
 type ImageUrlOrFileInputProps = {
   value: string;
@@ -67,7 +68,7 @@ const ImageUrlOrFileInput = ({
           {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
         </Button>
       </div>
-      {showPreview && value && (
+      {showPreview && isImageValue(value) && (
         <div className={`${previewClassName} rounded-lg overflow-hidden border border-border/50 bg-black`}>
           <img src={value} alt="" className="w-full h-full object-cover" />
         </div>
