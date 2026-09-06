@@ -180,16 +180,16 @@ const CasesSection = () => {
         ))}
       </div>
 
-      <div className="container-main mx-auto max-w-2xl lg:max-w-6xl px-4 pb-8 -mt-4 lg:mt-0 flex justify-center">
-        <a
-          href="https://t.me/HustlifyCasesBot"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white text-black border border-border text-sm font-bold whitespace-nowrap hover:bg-white/80 transition-colors w-full sm:w-auto"
-        >
-          Смотреть работы
-        </a>
-      </div>
+     <div className="container-main mx-auto max-w-2xl lg:max-w-6xl px-4 pb-8 -mt-4 lg:mt-0 flex justify-center">
+  <a
+    href="https://t.me/HustlifyCasesBot"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-white text-black border border-border text-sm font-bold whitespace-nowrap hover:bg-white/80 transition-colors w-full sm:w-auto"
+  >
+    Смотреть работы
+  </a>
+</div>
 
       <Dialog open={!!openCase} onOpenChange={(o) => !o && setOpenCase(null)}>
         <DialogContent className="p-0 border-0 outline-none ring-0 shadow-none bg-card overflow-hidden w-[calc(100vw-1rem)] sm:w-full max-w-3xl max-h-[92svh] sm:max-h-[88vh] [&>button.absolute]:hidden flex flex-col rounded-2xl [-webkit-tap-highlight-color:transparent] focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0">
