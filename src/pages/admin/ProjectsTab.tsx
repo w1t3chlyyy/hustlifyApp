@@ -12,6 +12,7 @@ import TabToolbar from './components/TabToolbar';
 import ListRow, { RowThumb } from './components/ListRow';
 import Pill from './components/Pill';
 import EmptyState from './components/EmptyState';
+import ImageUrlOrFileInput from './components/ImageUrlOrFileInput';
 
 const emptyProject = {
   id: '',
@@ -145,7 +146,14 @@ const ProjectsTab = () => {
                 <Field label="Иконка (эмодзи)"><Input value={editing.icon} onChange={(e) => setEditing({ ...editing, icon: e.target.value })} /></Field>
                 <Field label="Порядок сортировки"><Input type="number" value={editing.sort_order} onChange={(e) => setEditing({ ...editing, sort_order: Number(e.target.value) })} /></Field>
               </div>
-              <Field label="Баннер (URL картинки)"><Input value={editing.banner ?? ''} onChange={(e) => setEditing({ ...editing, banner: e.target.value })} placeholder="https://..." /></Field>
+              <Field label="Баннер">
+                <ImageUrlOrFileInput
+                  value={editing.banner ?? ''}
+                  onChange={(url) => setEditing({ ...editing, banner: url })}
+                  folder="projects"
+                  previewClassName="w-full h-28"
+                />
+              </Field>
               <div className="flex items-center justify-between rounded-lg border border-border p-3">
                 <div className="text-sm font-medium">Показывать на сайте</div>
                 <Switch checked={editing.is_active} onCheckedChange={(v) => setEditing({ ...editing, is_active: v })} />
